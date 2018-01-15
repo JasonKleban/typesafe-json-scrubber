@@ -51,6 +51,12 @@ describe('scrubber tests', function () {
             assert(!dataMatches, `"unsuccessfully" scrubbed data does match`);
             assert(!!scrubLog.length, `Expected errors or warnings but got: \n${scrubLog.join('\n')}\nEND`);
         });
+
+        it('nonconformingSimpleDocument1b', function () {
+            const { scrubbed, scrubLog, dataMatches } = testScrubber(simpleDocument1Scrubber, nonconformingSimpleDocument1b);
+            assert(!dataMatches, `"unsuccessfully" scrubbed data does match`);
+            assert(!!scrubLog.length, `Expected errors or warnings but got: \n${scrubLog.join('\n')}\nEND`);
+        });
     });
 });
 
@@ -130,4 +136,18 @@ const nonconformingSimpleDocument1a = {
     stringOrNullMember: 42,
 
     stringArrayMember: [ 42 ]
+};
+
+
+const nonconformingSimpleDocument1b = {
+    stringMember: 'one',
+    stringOrNullMember: null,
+
+    stringArrayMember: null,
+
+    stringArrayArrayMember: [],
+
+    booleanMember : false,
+
+    objectMember : null
 };

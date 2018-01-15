@@ -30,7 +30,7 @@ class _ObjectScrubber implements ObjectScrubber<any, {}> {
     }
 
     scrub(obj : any) : { scrubbed : any, scrubLog : ScrubLog[] } {
-        if (typeof obj !== 'object') {
+        if (obj === null || typeof obj !== 'object') {
             return { 
                 scrubbed : undefined, 
                 scrubLog : <ScrubLog[]>[{
