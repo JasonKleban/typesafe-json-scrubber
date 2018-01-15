@@ -1,0 +1,4 @@
+.vscode/**
+!.vscode/**/*.default.json
+dist
+node_modules

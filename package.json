@@ -1,0 +1,24 @@
+{
+  "name": "typesafe-json-scrubber",
+  "version": "1.0.0",
+  "description": "Define scrubbers of data of unreliable formats to ensure at run-time that the scrubbed data matches the specified schema/contract and type definitions.  Your scrubbers are also typechecked against your typescript types at design-time so that your scrubbers don't fall out of sync with the types they are meant to guarantee.",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "https://github.com/JasonKleban/typesafe-json-scrubber.git",
+  "scripts": {
+    "build": "./node_modules/.bin/tsc -p . --diagnostics",
+    "build-tests": "./node_modules/.bin/tsc -p test --diagnostics",
+    "test": "npm run build && cross-env TS_NODE_PROJECT=test mocha --require ts-node/register test/**/*.ts --watch-extensions tsx,ts --reporter spec --recursive --inspect",
+    "debug": "npm run build && cross-env TS_NODE_PROJECT=test mocha --require ts-node/register test/**/*.ts --watch-extensions tsx,ts --reporter spec --recursive --inspect-brk"
+  },
+  "author": "Jason Kleban",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/mocha": "^2.2.46",
+    "@types/node": "^9.3.0",
+    "cross-env": "^5.1.3",
+    "mocha": "^4.1.0",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.6.2"
+  }
+}
