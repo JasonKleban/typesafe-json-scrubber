@@ -42,7 +42,7 @@ class _ObjectScrubber implements ObjectScrubber<any, {}> {
         } else {
             return this.deferred.reduce(({ scrubbed, scrubLog }, deferred) => {
                 const { scrubbed : memberScrubbed, scrubLog : memberScrubLog } = 
-                    new (deferred.type)(this.path).scrub(obj[deferred.memberName]);
+                    new (deferred.type)(`${!!this.path.length ? `${this.path}.` : ''}${deferred.memberName}`).scrub(obj[deferred.memberName]);
 
                 scrubLog.push(... memberScrubLog);
                 Object.assign(scrubbed, { [deferred.memberName] : memberScrubbed });
