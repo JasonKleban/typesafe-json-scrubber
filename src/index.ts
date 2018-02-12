@@ -85,12 +85,13 @@ export function Union(... scrubbers : (new (path : string) => Scrubber<any, any>
                 !attempts[attempts.length - 1].scrubLog.filter(l => l.level === 'Fatal').length) {
                 return attempts[attempts.length - 1];
             } else {
+                const attemptsLog = attempts.map(a => a.scrubLog.filter(l => l.level === 'Fatal').map(l => `because on '${l.path}' [${l.level}] ${l.detail}`).join('\n'));
                 return { 
                     scrubbed : undefined, 
                     scrubLog : <ScrubLog[]>[{
                         level: 'Fatal',
                         path: `${this.path}`,
-                        detail: `Expected a string but got (${JSON.stringify(obj) || 'undefined'}).`
+                        detail: `Expected any of (${scrubbers.map(f => f.name).join(', ')}) but got (${JSON.stringify(obj) || 'undefined'}).  \n${attemptsLog}`
                     }]
                 }
             }
@@ -117,6 +118,17 @@ export class StringType implements Scrubber<string, string> {
                 }]
             };
         }
+    }
+}
+
+export class AnyType implements Scrubber<any, any> {
+    constructor(private path : string) {}
+
+    scrub(obj : any) : { scrubbed : any | undefined, scrubLog : ScrubLog[] } {
+        return { 
+            scrubbed : obj, 
+            scrubLog : <ScrubLog[]>[]
+        };
     }
 }
 
@@ -253,3 +265,13 @@ export const NumberOrNullType = Union(NumberType, NullType);
 export const NumberOrNullOrUndefinedType = Union(NumberType, NullType, UndefinedType);
 export const BooleanOrNullType = Union(BooleanType, NullType);
 export const BooleanOrNullOrUndefinedType = Union(BooleanType, NullType, UndefinedType);
+
+export function scrubAssert<T, P = {}>(scrubber : Scrubber<T, P>, data : any) {
+    const { scrubbed, scrubLog } = scrubber.scrub(data);
+
+    if (scrubLog.filter(l => l.level === 'Fatal').length) {
+        throw new Error(`Fatal Scrubbing Errors: \n${scrubLog.map(l => `  on '${l.path}' [${l.level}] ${l.detail}`).join('\n')}`);
+    }
+
+    return scrubbed!;
+}

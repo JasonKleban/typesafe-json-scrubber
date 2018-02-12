@@ -2,15 +2,18 @@ import * as assert from 'assert'
 import { schema, ObjectScrubber, UndefinedType, StringType, 
     BooleanType, NumberType, NullType, ArrayOfType, Union, 
     StringOrNullOrUndefinedType, ObjectType } from '../../src/index'
+import { Scrubber } from '../../src/interfaces';
 
 describe('scrubber tests', function () {
     describe('Simple', function () {
 
-        function testScrubber<T, S>(scrubber: ObjectScrubber<T, S>, data : any) {
+        function testScrubber<T, S>(scrubber: Scrubber<T, S>, data : any) {
             const { scrubbed, scrubLog } = scrubber.scrub(data);
             const dataMatches = JSON.stringify(scrubbed) === JSON.stringify(data);
             return { scrubbed, scrubLog : scrubLog.map(l => `[${l.level}] at ${l.path}: ${l.detail}`), dataMatches };
         }
+
+        const primative1Scrubber = new StringType('');
 
         const simpleDocument1Scrubber = schema<SimpleDocument1>('simpleDocument1Scrubber')
             .must('stringMember', StringType)
@@ -24,6 +27,13 @@ describe('scrubber tests', function () {
             .must('objectMember', ObjectType((schema : ObjectScrubber<SubType1>) => schema
                 .must('stringMember', StringType)
                 .must('numberMember', NumberType)));
+        
+        it('primative1', function () {
+            const { scrubbed, scrubLog, dataMatches } = testScrubber(primative1Scrubber, 'hello');
+
+            assert(dataMatches, `"successfully" scrubbed data doesn't match`);
+            assert(!scrubLog.length, scrubLog.join('\n'));
+        });
 
         it('conformingSimpleDocument1a', function () {
             const { scrubbed, scrubLog, dataMatches } = testScrubber(simpleDocument1Scrubber, conformingSimpleDocument1a);
