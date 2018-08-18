@@ -15,11 +15,11 @@ export interface Scrubber<T, P> {
 
 export interface ObjectScrubber<T, P = {}> extends Scrubber<T, P> {
     /** memberName : string */
-    must<M extends keyof T, S>(memberName : M, type : new (path : string) => Scrubber<T[M], S>) : ObjectScrubber<T, P & Record<M, S>>
+    must<M extends Extract<keyof T, string>, S>(memberName : M, type : new (path : string) => Scrubber<T[M], S>) : ObjectScrubber<T, P & Record<M, S>>
     
     /** memberName : string = defaultValue */
-    should<M extends keyof T, S>(memberName : M, type : new (path : string) => Scrubber<T[M], S>, defaultValue : T[M]) : ObjectScrubber<T, P & Record<M, S>>
+    should<M extends Extract<keyof T, string>, S>(memberName : M, type : new (path : string) => Scrubber<T[M], S>, defaultValue : T[M]) : ObjectScrubber<T, P & Record<M, S>>
     
     /** memberName? : string */
-    may<M extends keyof T, S>(memberName : M, type : new (path : string) => Scrubber<T[M], S>) : ObjectScrubber<T, P & PartialRecord<M, S>>
+    may<M extends Extract<keyof T, string>, S>(memberName : M, type : new (path : string) => Scrubber<T[M], S>) : ObjectScrubber<T, P & PartialRecord<M, S>>
 }
