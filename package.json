@@ -9,7 +9,9 @@
     "build": "./node_modules/.bin/tsc -p . --diagnostics",
     "build-tests": "./node_modules/.bin/tsc -p test --diagnostics",
     "test": "npm run build && cross-env TS_NODE_PROJECT=test mocha --require ts-node/register test/**/*.ts --watch-extensions tsx,ts --reporter spec --recursive --inspect",
-    "debug": "npm run build && cross-env TS_NODE_PROJECT=test mocha --require ts-node/register test/**/*.ts --watch-extensions tsx,ts --reporter spec --recursive --inspect-brk"
+    "debug": "npm run build && cross-env TS_NODE_PROJECT=test mocha --require ts-node/register test/**/*.ts --watch-extensions tsx,ts --reporter spec --recursive --inspect-brk",
+    "prepublishOnly": "./node_modules/.bin/tsc -p .",
+    "postpack": "npm version patch"
   },
   "author": "Jason Kleban",
   "license": "ISC",
