@@ -1,6 +1,6 @@
 {
   "name": "typesafe-json-scrubber",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Define scrubbers of data of unreliable formats to ensure at run-time that the scrubbed data matches the specified schema/contract and type definitions.  Your scrubbers are also typechecked against your typescript types at design-time so that your scrubbers don't fall out of sync with the types they are meant to guarantee.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
