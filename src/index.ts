@@ -31,8 +31,8 @@ class _ObjectScrubber implements ObjectScrubber<any, {}> {
 
     scrub(obj : any) : { scrubbed : any, scrubLog : ScrubLog[] } {
         if (obj === null || typeof obj !== 'object') {
-            return { 
-                scrubbed : undefined, 
+            return {
+                scrubbed : undefined,
                 scrubLog : <ScrubLog[]>[{
                     level: 'Fatal',
                     path: `${this.path}`,
@@ -41,7 +41,7 @@ class _ObjectScrubber implements ObjectScrubber<any, {}> {
             };
         } else {
             return this.deferred.reduce(({ scrubbed, scrubLog }, deferred) => {
-                const { scrubbed : memberScrubbed, scrubLog : memberScrubLog } = 
+                const { scrubbed : memberScrubbed, scrubLog : memberScrubLog } =
                     new (deferred.type)(`${!!this.path.length ? `${this.path}.` : ''}${deferred.memberName}`).scrub(obj[deferred.memberName]);
 
                 scrubLog.push(... memberScrubLog);
@@ -55,39 +55,39 @@ class _ObjectScrubber implements ObjectScrubber<any, {}> {
 }
 
 export function Union<A, B>(
-    a : new (path : string) => Scrubber<A, A>, 
+    a : new (path : string) => Scrubber<A, A>,
     b : new (path : string) => Scrubber<B, B>) : new (path : string) => Scrubber<A | B, A | B>
 export function Union<A, B, C>(
-    a : new (path : string) => Scrubber<A, A>, 
-    b : new (path : string) => Scrubber<B, B>, 
+    a : new (path : string) => Scrubber<A, A>,
+    b : new (path : string) => Scrubber<B, B>,
     c : new (path : string) => Scrubber<C, C>) : new (path : string) => Scrubber<A | B | C, A | B | C>
 export function Union<A, B, C, D>(
-    a : new (path : string) => Scrubber<A, A>, 
-    b : new (path : string) => Scrubber<B, B>, 
-    c : new (path : string) => Scrubber<C, C>, 
+    a : new (path : string) => Scrubber<A, A>,
+    b : new (path : string) => Scrubber<B, B>,
+    c : new (path : string) => Scrubber<C, C>,
     d : new (path : string) => Scrubber<D, D>) : new (path : string) => Scrubber<A | B | C | D, A | B | C | D>
 export function Union(... scrubbers : (new (path : string) => Scrubber<any, any>)[]) {
     return class implements Scrubber<any[], any> {
         constructor(private path : string) { }
-    
-        scrub(obj : any) : { scrubbed : any, scrubLog : ScrubLog[] } {
+
+        scrub(obj : unknown) : { scrubbed : any, scrubLog : ScrubLog[] } {
             const attempts = scrubbers.reduce((matches, type) => {
                 if (!matches.length ||
                     !!matches[matches.length - 1].scrubLog.filter(l => l.level === 'Fatal').length) {
                     matches.push(new (type)(this.path).scrub(obj));
                 }
-    
+
                 return matches;
             },
             <{ scrubbed : any, scrubLog : ScrubLog[] }[]>[]);
-    
+
             if (!!attempts.length &&
                 !attempts[attempts.length - 1].scrubLog.filter(l => l.level === 'Fatal').length) {
                 return attempts[attempts.length - 1];
             } else {
                 const attemptsLog = attempts.map(a => a.scrubLog.filter(l => l.level === 'Fatal').map(l => `because on '${l.path}' [${l.level}] ${l.detail}`).join('\n'));
-                return { 
-                    scrubbed : undefined, 
+                return {
+                    scrubbed : undefined,
                     scrubLog : <ScrubLog[]>[{
                         level: 'Fatal',
                         path: `${this.path}`,
@@ -102,15 +102,15 @@ export function Union(... scrubbers : (new (path : string) => Scrubber<any, any>
 export class StringType implements Scrubber<string, string> {
     constructor(private path : string) {}
 
-    scrub(obj : any) : { scrubbed : string | undefined, scrubLog : ScrubLog[] } {
+    scrub(obj : unknown) : { scrubbed : string | undefined, scrubLog : ScrubLog[] } {
         if ( typeof obj === 'string' ) {
-            return { 
-                scrubbed : <string>obj, 
+            return {
+                scrubbed : <string>obj,
                 scrubLog : <ScrubLog[]>[]
             };
         } else {
-            return { 
-                scrubbed : undefined, 
+            return {
+                scrubbed : undefined,
                 scrubLog : <ScrubLog[]>[{
                     level: 'Fatal',
                     path: `${this.path}`,
@@ -124,9 +124,9 @@ export class StringType implements Scrubber<string, string> {
 export class AnyType implements Scrubber<any, any> {
     constructor(private path : string) {}
 
-    scrub(obj : any) : { scrubbed : any | undefined, scrubLog : ScrubLog[] } {
-        return { 
-            scrubbed : obj, 
+    scrub(obj : unknown) : { scrubbed : any | undefined, scrubLog : ScrubLog[] } {
+        return {
+            scrubbed : obj,
             scrubLog : <ScrubLog[]>[]
         };
     }
@@ -135,15 +135,15 @@ export class AnyType implements Scrubber<any, any> {
 export class NumberType implements Scrubber<number, number> {
     constructor(private path : string) {}
 
-    scrub(obj : any) : { scrubbed : number | undefined, scrubLog : ScrubLog[] } {
+    scrub(obj : unknown) : { scrubbed : number | undefined, scrubLog : ScrubLog[] } {
         if ( typeof obj === 'number' ) {
-            return { 
-                scrubbed : <number>obj, 
+            return {
+                scrubbed : <number>obj,
                 scrubLog : <ScrubLog[]>[]
             };
         } else {
-            return { 
-                scrubbed : undefined, 
+            return {
+                scrubbed : undefined,
                 scrubLog : <ScrubLog[]>[{
                     level: 'Fatal',
                     path: `${this.path}`,
@@ -157,15 +157,15 @@ export class NumberType implements Scrubber<number, number> {
 export class BooleanType implements Scrubber<boolean, boolean> {
     constructor(private path : string) {}
 
-    scrub(obj : any) : { scrubbed : boolean | undefined, scrubLog : ScrubLog[] } {
+    scrub(obj : unknown) : { scrubbed : boolean | undefined, scrubLog : ScrubLog[] } {
         if ( typeof obj === 'boolean' ) {
-            return { 
-                scrubbed : <boolean>obj, 
+            return {
+                scrubbed : <boolean>obj,
                 scrubLog : <ScrubLog[]>[]
             };
         } else {
-            return { 
-                scrubbed : undefined, 
+            return {
+                scrubbed : undefined,
                 scrubLog : <ScrubLog[]>[{
                     level: 'Fatal',
                     path: `${this.path}`,
@@ -181,19 +181,19 @@ export function ArrayOfType<T>(scrubber : new (path : string) => Scrubber<T, T>)
     return class implements Scrubber<T[], T[]> {
         constructor(private path : string) {}
 
-        scrub(obj : any) : { scrubbed : any[] | undefined, scrubLog : ScrubLog[] } {
+        scrub(obj : unknown) : { scrubbed : any[] | undefined, scrubLog : ScrubLog[] } {
             if ( Array.isArray(obj) ) {
                 const scrubbedElements = obj.map((e, i) => {
                     return new scrubber(`${!!this.path.length ? `${this.path}.` : ''}[${i}]`).scrub(e);
                 });
 
-                return { 
-                    scrubbed : scrubbedElements.map(r => r.scrubbed), 
+                return {
+                    scrubbed : scrubbedElements.map(r => r.scrubbed),
                     scrubLog : ([] as ScrubLog[]).concat( ... scrubbedElements.map(r => r.scrubLog))
                 };
             } else {
-                return { 
-                    scrubbed : undefined, 
+                return {
+                    scrubbed : undefined,
                     scrubLog : <ScrubLog[]>[{
                         level: 'Fatal',
                         path: `${this.path}`,
@@ -208,15 +208,15 @@ export function ArrayOfType<T>(scrubber : new (path : string) => Scrubber<T, T>)
 export class NullType implements Scrubber<null, null> {
     constructor(private path : string) {}
 
-    scrub(obj : any) : { scrubbed : null | undefined, scrubLog : ScrubLog[] } {
+    scrub(obj : unknown) : { scrubbed : null | undefined, scrubLog : ScrubLog[] } {
         if ( obj === null ) {
-            return { 
-                scrubbed : <null>obj, 
+            return {
+                scrubbed : <null>obj,
                 scrubLog : <ScrubLog[]>[]
             };
         } else {
-            return { 
-                scrubbed : undefined, 
+            return {
+                scrubbed : undefined,
                 scrubLog : <ScrubLog[]>[{
                     level: 'Fatal',
                     path: `${this.path}`,
@@ -230,15 +230,15 @@ export class NullType implements Scrubber<null, null> {
 export class UndefinedType implements Scrubber<undefined, undefined> {
     constructor(private path : string) {}
 
-    scrub(obj : any) : { scrubbed : undefined, scrubLog : ScrubLog[] } {
+    scrub(obj : unknown) : { scrubbed : undefined, scrubLog : ScrubLog[] } {
         if ( obj === undefined ) {
-            return { 
+            return {
                 scrubbed : <undefined>obj,
                 scrubLog : <ScrubLog[]>[]
             };
         } else {
-            return { 
-                scrubbed : undefined, 
+            return {
+                scrubbed : undefined,
                 scrubLog : <ScrubLog[]>[{
                     level: 'Fatal',
                     path: `${this.path}`,

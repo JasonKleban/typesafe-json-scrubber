@@ -1,7 +1,7 @@
 
 # Type-safety scrubber for json data
 
-Define scrubbers of data of unreliable formats to ensure at run-time that the scrubbed data matches the specified schema/contract and type definitions.  Your scrubbers are also typechecked against your typescript types at design-time so that your scrubbers don't fall out of sync with the types they are meant to guarantee.
+Define scrubbers of data of unreliable formats to ensure at run-time that the scrubbed data matches the specified schema/contract and type definitions.  Your scrubbers are also typechecked against your typescript types at design-time so that your scrubbers don't fall out of sync with the types they are meant to guarantee.  As always, `tsc --strict` is recommended.
 
 As with most typesafety benefits, it really requires interaction to understand, but here's an example anyway.
 
@@ -50,9 +50,11 @@ const conformingSimpleDocument1a = {
 };
 ```
 
+Here is the runtime scrubber:
+
 ```ts
-import { schema, ObjectScrubber, UndefinedType, StringType, 
-    BooleanType, NumberType, NullType, ArrayOfType, Union, 
+import { schema, ObjectScrubber, UndefinedType, StringType,
+    BooleanType, NumberType, NullType, ArrayOfType, Union,
     StringOrNullOrUndefinedType, ObjectType } from 'typesafe-json-scrubber'
 
 const simpleDocument1Scrubber = schema<SimpleDocument1>('simpleDocument1Scrubber')
@@ -67,7 +69,11 @@ const simpleDocument1Scrubber = schema<SimpleDocument1>('simpleDocument1Scrubber
     .must('objectMember', ObjectType((schema : ObjectScrubber<SubType1>) => schema
         .must('stringMember', StringType)
         .must('numberMember', NumberType)));
+```
 
+... and a use of the scubber, printing out the results of the attempt:
+
+```ts
 const { scrubbed, scrubLog } = simpleDocument1Scrubber.scrub(conformingSimpleDocument1a);
 
 if (scrubLog.filter(l => l.level === 'Fatal').length) {
@@ -96,5 +102,30 @@ if (scrubLog.filter(l => l.level === 'Fatal').length) {
 ```
 
 There's also `.may()` and `.should()` for `ObjectType` construction but I haven't tested it or given examples.
+
+Here's a ~realworld example of a scrubber that it built up from other scrubber definitions.  The way the types work here enforce that the field names do in fact exist in the type they are scrubbing for (protection from expecting too much) AND that the built-up scrubber outputs only those fields which have been scrubbed for - so when you try to assign your scrubbed data to an identifier of the type you expect (protecting you from expecting too little).
+
+```ts
+export const secKey = ObjectType((schema: ObjectScrubber<SecKey>) => schema
+    .must('curve', StringType)
+    .must('pub', StringType)
+    .must('sec', StringType)
+    .must('issuedDateUtc', NumberType));
+
+export const pubKey = ObjectType((schema: ObjectScrubber<PubKey>) => schema
+    .must('curve', StringType)
+    .must('pub', StringType)
+    .must('issuedDateUtc', NumberType));
+
+export const privateChannelToken = ObjectType((schema: ObjectScrubber<PrivateChannelToken>) => schema
+    .must('channel', StringType)
+    .must('issuedDateUtc', NumberType)
+    .must('ttl', NumberType)
+    .must('signingKey', pubKey)
+    .must('exchangingKey', pubKey)
+    .must('signature', StringType));
+
+export const PrivateChannelTokenScrubber = new privateChannelToken('');
+```
 
 This whole library is alpha stage use-at-your-own-risk for now ... so try it out.

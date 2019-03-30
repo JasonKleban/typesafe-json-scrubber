@@ -10,7 +10,7 @@ export interface ScrubLog {
 
 export interface Scrubber<T, P> {
     /** scrub the obj */
-    scrub(obj : unknown) : { scrubbed : P | undefined, scrubLog : ScrubLog[] }
+    scrub(obj : unknown) : { scrubbed : undefined | (P extends T ? T : P), scrubLog : ScrubLog[] }
 }
 
 export interface ObjectScrubber<T, P = {}> extends Scrubber<T, P> {

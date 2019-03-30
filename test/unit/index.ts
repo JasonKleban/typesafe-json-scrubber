@@ -1,6 +1,6 @@
 import * as assert from 'assert'
-import { schema, ObjectScrubber, UndefinedType, StringType, 
-    BooleanType, NumberType, NullType, ArrayOfType, Union, 
+import { schema, ObjectScrubber, UndefinedType, StringType,
+    BooleanType, NumberType, NullType, ArrayOfType, Union,
     StringOrNullOrUndefinedType, ObjectType } from '../../src/index'
 import { Scrubber } from '../../src/interfaces';
 
@@ -27,7 +27,7 @@ describe('scrubber tests', function () {
             .must('objectMember', ObjectType((schema : ObjectScrubber<SubType1>) => schema
                 .must('stringMember', StringType)
                 .must('numberMember', NumberType)));
-        
+
         it('primative1', function () {
             const { scrubbed, scrubLog, dataMatches } = testScrubber(primative1Scrubber, 'hello');
 
@@ -38,7 +38,7 @@ describe('scrubber tests', function () {
         it('conformingSimpleDocument1a', function () {
             const { scrubbed, scrubLog, dataMatches } = testScrubber(simpleDocument1Scrubber, conformingSimpleDocument1a);
 
-            const typeTest : SimpleDocument1 = scrubbed;
+            const typeTest : SimpleDocument1 | undefined = scrubbed;
 
             assert(dataMatches, `"successfully" scrubbed data doesn't match`);
             assert(!scrubLog.length, scrubLog.join('\n'));
