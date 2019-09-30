@@ -89,7 +89,7 @@ interface SubType1 {
     numberMember: number
 }
 
-const conformingSimpleDocument1a = {
+const conformingSimpleDocument1a : unknown = {
     stringMember: 'one',
     stringOrNullMember: 'two',
     stringOrNullOrUndefinedMember1: 'three',
@@ -107,7 +107,7 @@ const conformingSimpleDocument1a = {
     }
 };
 
-const conformingSimpleDocument1b = {
+const conformingSimpleDocument1b : unknown = {
     stringMember: 'one',
     stringOrNullMember: null,
     stringOrNullOrUndefinedMember1: null,
@@ -125,7 +125,7 @@ const conformingSimpleDocument1b = {
     }
 };
 
-const conformingSimpleDocument1c = {
+const conformingSimpleDocument1c : unknown = {
     stringMember: 'one',
     stringOrNullMember: null,
 
@@ -141,7 +141,7 @@ const conformingSimpleDocument1c = {
     }
 };
 
-const nonconformingSimpleDocument1a = {
+const nonconformingSimpleDocument1a : unknown = {
     stringMember: null,
     stringOrNullMember: 42,
 
@@ -149,7 +149,7 @@ const nonconformingSimpleDocument1a = {
 };
 
 
-const nonconformingSimpleDocument1b = {
+const nonconformingSimpleDocument1b : unknown = {
     stringMember: 'one',
     stringOrNullMember: null,
 
